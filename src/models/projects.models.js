@@ -5,6 +5,7 @@ import { parseDateIso } from "../util/util.js";
 
 const db = await connectToDB();
 const collection = db.collection('projects');
+const taskCollection = db.collection('tasks');
 
 // project schema 
 const projectS = Joi.object({
@@ -12,7 +13,7 @@ const projectS = Joi.object({
     startDate: Joi.date().required(),
     doneDate: Joi.date().required(),
     dueDate: Joi.date().required(),
-    tasks: Joi.string().default([]),
+    tasks: Joi.array().default([]),
     timestamp: Joi.date().default(() => new Date())
 })
 
@@ -84,7 +85,7 @@ export async function asignTaskToProject(projectId, taskId) {
 
     // check if task exists
     const taskObjectid = new ObjectId(taskId)
-    const task = await collection.findOne({ '_id': taskObjectid })
+    const task = await taskCollection.findOne({ '_id': taskObjectid })
     if (!task) {
         throw new Error('task does not exits!');
     }
@@ -95,6 +96,22 @@ export async function asignTaskToProject(projectId, taskId) {
         throw new Error('project does not exits!');
     }
     // check if task already exist in another project then pull it from there
-
+    if (task.projectId) {
+        if (new ObjectId(task.projectId).equals(project._id)) {
+            // as it is already been assigned to the project
+            return true;
+        }
+        // take the project from the array it already exists no need to update the projectid here as it will be done down the line anyway
+        const updateproject = await collection.updateOne({ '_id': task.projectId }, { '$pull': { 'tasks': { '_id': taskObjectid } } })
+        if (updateproject.modifiedCount !== 1) {
+            return false
+        }
+    }
     // push task object to tasks array in project
+    const update = await collection.updateOne({ '_id': projectObjectid }, { '$push': { 'tasks': task } })
+    // update the projectId in tasks document
+    const updatetask = await taskCollection.updateOne({ '_id': taskObjectid }, { $set: { projectId: projectObjectid } })
+    if (update.modifiedCount === 1 && updatetask.modifiedCount === 1) {
+        return true;
+    };
 }

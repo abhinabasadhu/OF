@@ -65,7 +65,7 @@ export async function getP(req, res) {
             query.doneDate = {
                 $gte: new Date(parsedDoneDate.toISOString().slice(0, 10) + "T00:00:00.000Z"),
                 $lt: new Date(parsedDoneDate.toISOString().slice(0, 10) + "T23:59:59.999Z")
-              };
+            };
         }
         if (dueDate) {
             // parse the date into non iso formate and then adjust it according to 1 second gap between greater than and less then 
@@ -76,7 +76,7 @@ export async function getP(req, res) {
             }
         }
         if (name) {
-            query.name =  { $regex: `^${name}$`, $options: '' }; // Case-sensitive exact match
+            query.name = { $regex: `^${name}$`, $options: '' }; // Case-sensitive exact match
         }
 
         const projects = await filterProject(query);
@@ -90,13 +90,21 @@ export async function getP(req, res) {
     }
 }
 
-export  async function asignTtoP(req, res) {
-    //asignTaskToProject
+export async function asignTtoP(req, res) {
+    // handler to asign Task To Project
     // auth layer
     try {
-        const { projectId, taskId} = req.query;
-        await asignTaskToProject(projectId, taskId);
-        res.status(200).send('project updated successfully');
+        const { projectId, taskId } = req.query;
+        if (!projectId || !taskId) {
+            return res.status(400).send('Project ID and Task ID are required');
+        }
+
+        const result = await asignTaskToProject(projectId, taskId);
+        if (result) {
+            res.status(200).send('Project updated successfully');
+        } else {
+            res.status(500).send('Failed to update project');
+        }
     } catch (error) {
         res.status(400).send(error.message);
     }
