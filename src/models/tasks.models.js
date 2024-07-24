@@ -74,7 +74,7 @@ export async function deleteTask(query) {
     }
     if (task.projectId) {
         // if the task is assigned to a project unasign it to remove it 
-        throw new Error('This task is added to a project, unasign the task first!');
+        throw new Error('This task is added to a project, unasign the task first or remove it!');
     }
     const deleteResult = await collection.deleteOne({ '_id': taskObjectId });
     console.log('Deleted task count:', deleteResult.deletedCount);

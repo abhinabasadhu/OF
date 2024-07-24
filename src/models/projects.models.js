@@ -106,7 +106,7 @@ export async function asignTaskToProject(projectId, taskId) {
             return true;
         }
         // take the project from the array it already exists no need to update the projectid here as it will be done down the line anyway
-        const updateProject = await collection.updateOne({ '_id': task.projectId }, { '$pull': { 'tasks': { '_id': taskObjectId } } })
+        const updateProject = await collection.updateOne({ '_id': task.projectId }, { '$pull': { 'tasks':  taskObjectId  } })
         if (updateProject.modifiedCount !== 1) {
             return false
         }
@@ -116,6 +116,6 @@ export async function asignTaskToProject(projectId, taskId) {
     // update the projectId in tasks document
     const updateTask = await taskCollection.updateOne({ '_id': taskObjectId }, { $set: { projectId: projectObjectId } })
     if (update.modifiedCount === 1 && updateTask.modifiedCount === 1) {
-        return true;
+        return update;
     };
 }
