@@ -8,17 +8,20 @@ const taskCollection = db.collection('tasks');
 const projectCollection = db.collection('projects');
 
 
-// Get today's date at midnight (00:00:00) in ISO format
-const today = new Date();
-today.setHours(0, 0, 0, 0); // Reset hours, minutes, seconds, and milliseconds
-const isoToday = today.toISOString();
-
 const taskDueToday = async() => {
 
-    // Create a filter for tasks where the startDate is today
+    // Convert dueDateStr to ISO date object
+    const dueDate = new Date();
+
+    // Ensure time is set to the end of the day
+    const startOfDay = new Date(dueDate.setHours(0, 0, 0, 0));
+    const endOfDay = new Date(dueDate.setHours(23, 59, 59, 999));
+
+    // Create a query to filter by date
     const query = {
         dueDate: {
-            $gte: isoToday // Greater than or equal to today
+            $gte: startOfDay, // Start of the day
+            $lte: endOfDay    // End of the day
         }
     };
 
@@ -32,12 +35,21 @@ const taskDueToday = async() => {
 
 const projectsDueToday = async() => {
     
-    // Create a filter for tasks where the startDate is today
-    const query = {
-        dueDate: {
-            $gte: isoToday // Greater than or equal to today
-        }
-    };
+     // Convert dueDateStr to ISO date object
+     const dueDate = new Date();
+
+
+     // Ensure time is set to the end of the day
+     const startOfDay = new Date(dueDate.setHours(0, 0, 0, 0));
+     const endOfDay = new Date(dueDate.setHours(23, 59, 59, 999));
+ 
+     // Create a query to filter by date
+     const query = {
+         dueDate: {
+             $gte: startOfDay, // Start of the day
+             $lte: endOfDay    // End of the day
+         }
+     };
 
     // Query the database
     const projects = await projectCollection.find(query).toArray();
