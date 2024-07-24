@@ -8,16 +8,16 @@ const collection = db.collection('tasks');
 
 // task schema 
 const taskS = Joi.object({
-  name: Joi.string().required(),
-  status: Joi.string().valid('todo', 'done').default('todo'),
-  startDate: Joi.date().required(),
-  doneDate: Joi.date().required(),
-  dueDate: Joi.date().required(),
-  projectId: Joi.string().default(''),
-  timestamp: Joi.date().default(() => new Date())
+    name: Joi.string().required(),
+    status: Joi.string().valid('todo', 'done').default('todo'),
+    startDate: Joi.date().required(),
+    doneDate: Joi.date().required(),
+    dueDate: Joi.date().required(),
+    projectId: Joi.string().default(''),
+    timestamp: Joi.date().default(() => new Date())
 });
 
-export async function insertTask(item){
+export async function insertTask(item) {
     // this function inserts the task into the db
     // params: task object
 
@@ -26,9 +26,13 @@ export async function insertTask(item){
     item.startDate = parseDateIso(item.startDate);
     item.dueDate = parseDateIso(item.dueDate);
     item.doneDate = parseDateIso(item.doneDate);
-    const { error, value } = taskS.validate(item);
+    
+    const { error, value } = taskS.validate(item, {
+        abortEarly: true,
+        allowUnknown: false
+    });// prevents unknown fields to be added when validted;
 
-    if (value) {
+    if (!error) {
         // db operation
         const insertResult = await collection.insertOne(value);
         console.log('Inserted item:', insertResult.insertedId);
@@ -51,11 +55,11 @@ export async function updateTask(query, item) {
     // this function updates an existing task
     // check if the task exists in the db
     const taskObjectid = new ObjectId(query.id);
-    const task = await collection.findOne({'_id': taskObjectid})
+    const task = await collection.findOne({ '_id': taskObjectid })
     if (!task) {
         throw new Error('Task does not exits!');
     }
-    const updateResult = await collection.updateOne({'_id': taskObjectid}, { $set: item });
+    const updateResult = await collection.updateOne({ '_id': taskObjectid }, { $set: item });
     console.log('Updated task count:', updateResult.modifiedCount);
     return updateResult;
 }
@@ -65,11 +69,11 @@ export async function deleteTask(query) {
     // check if the task exists in the db
 
     const taskObjectid = new ObjectId(query.id);
-    const task = await collection.findOne({'_id': taskObjectid})
+    const task = await collection.findOne({ '_id': taskObjectid })
     if (!task) {
         throw new Error('Task does not exits!');
     }
-    const deleteResult = await collection.deleteOne({'_id': taskObjectid});
+    const deleteResult = await collection.deleteOne({ '_id': taskObjectid });
     console.log('Deleted task count:', deleteResult.deletedCount);
     return deleteResult;
 }
