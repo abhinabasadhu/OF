@@ -52,6 +52,11 @@ export async function updateTask(query, item) {
     if (!task) {
         throw new Error('Task does not exits!');
     }
+    if (item.status === 'todo' && task.status === 'done') {
+        if (!item.startDate || !item.doneDate) {
+            throw new Error('Task needs start and done dates for chaning the status from done to todo!');  
+        }
+    }
     const updateResult = await collection.updateOne({ '_id': taskObjectId }, { $set: item });
     console.log('Updated task count:', updateResult.modifiedCount);
     return updateResult;

@@ -8,7 +8,7 @@ const taskCollection = db.collection('tasks');
 const projectCollection = db.collection('projects');
 
 
-const taskDueToday = async() => {
+const taskDueToday = async () => {
 
     // Convert dueDateStr to ISO date object
     const dueDate = new Date();
@@ -33,23 +33,23 @@ const taskDueToday = async() => {
     return tasks;
 };
 
-const projectsDueToday = async() => {
-    
-     // Convert dueDateStr to ISO date object
-     const dueDate = new Date();
+const projectsDueToday = async () => {
+
+    // Convert dueDateStr to ISO date object
+    const dueDate = new Date();
 
 
-     // Ensure time is set to the end of the day
-     const startOfDay = new Date(dueDate.setHours(0, 0, 0, 0));
-     const endOfDay = new Date(dueDate.setHours(23, 59, 59, 999));
- 
-     // Create a query to filter by date
-     const query = {
-         dueDate: {
-             $gte: startOfDay, // Start of the day
-             $lte: endOfDay    // End of the day
-         }
-        };
+    // Ensure time is set to the end of the day
+    const startOfDay = new Date(dueDate.setHours(0, 0, 0, 0));
+    const endOfDay = new Date(dueDate.setHours(23, 59, 59, 999));
+
+    // Create a query to filter by date
+    const query = {
+        dueDate: {
+            $gte: startOfDay, // Start of the day
+            $lte: endOfDay    // End of the day
+        }
+    };
 
     // Query the database
     const projects = await projectCollection.find(query).toArray();
