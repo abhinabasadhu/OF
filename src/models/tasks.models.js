@@ -49,7 +49,7 @@ export async function updateTask(query, item) {
     if (!task) {
         throw new Error('Task does not exits!');
     }
-    const updateResult = await collection.updateOne({'id': id}, { $set: item });
+    const updateResult = await collection.updateOne({'_id': taskObjectid}, { $set: item });
     console.log('Updated task count:', updateResult.modifiedCount);
     return updateResult;
 }
