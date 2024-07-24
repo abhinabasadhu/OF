@@ -25,7 +25,7 @@ export async function insertProject(item) {
     item.startDate = parseDateIso(item.startDate);
     item.dueDate = parseDateIso(item.dueDate);
     item.doneDate = parseDateIso(item.doneDate);
-    
+
     const { error, value } = projectS.validate(item, {
         abortEarly: true,
         allowUnknown: false
@@ -43,17 +43,11 @@ export async function insertProject(item) {
     }
 }
 
-export async function listAllProjects() {
-    // this function lists all the projects
-
-    const projects = await collection.find({}).toArray(); // converting the cursor into a list of documents
-    console.log(`All Projetcs : ${projects}`)
-    return projects;
-}
 
 export async function updateProject(query, item) {
     // this function updates an existing projects
     // check if the pask exists in the db
+
     const projectObjectid = new ObjectId(query.id);
     const project = await collection.findOne({ '_id': projectObjectid })
     if (!project) {
@@ -79,11 +73,28 @@ export async function deleteProject(query) {
 }
 
 export async function filterProject(query) {
-    // this function will fliter projects according to params
+    // this function will fliter projects according to params or without params this function lists all the projects
     const projects = await collection.find(query).toArray();
     return projects;
 }
 
-export async function asignTaskToProject(projectId, taskId) {
 
+export async function asignTaskToProject(projectId, taskId) {
+    // this function will add tasks to projects
+
+    // check if task exists
+    const taskObjectid = new ObjectId(taskId)
+    const task = await collection.findOne({ '_id': taskObjectid })
+    if (!task) {
+        throw new Error('task does not exits!');
+    }
+    // check if project exists
+    const projectObjectid = new ObjectId(projectId)
+    const project = await collection.findOne({ '_id': projectObjectid })
+    if (!project) {
+        throw new Error('project does not exits!');
+    }
+    // check if task already exist in another project then pull it from there
+
+    // push task object to tasks array in project
 }

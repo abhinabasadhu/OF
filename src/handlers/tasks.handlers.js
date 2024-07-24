@@ -1,4 +1,4 @@
-import { insertTask, listAll, updateTask, deleteTask, filterTask } from '../models/tasks.models.js';
+import { insertTask, updateTask, deleteTask, filterTask } from '../models/tasks.models.js';
 import { parseDate } from '../util/util.js';
 
 export async function createT(req, res) {
@@ -10,21 +10,6 @@ export async function createT(req, res) {
         // try inserting it into the db
         await insertTask(newTask);
         res.status(201).send('Task created successfully');
-    } catch (error) {
-        res.status(400).send(error.message);
-    }
-}
-
-export async function getT(req, res) {
-    // this handler will list tasks using the listAll function in the task models
-    // auth layer
-    try {
-        const tasks = await listAll();
-        if (tasks) {
-            res.status(200).json(tasks);
-        } else {
-            res.status(404).send('Tasks not found');
-        }
     } catch (error) {
         res.status(400).send(error.message);
     }
@@ -55,7 +40,7 @@ export async function deleteT(req, res) {
     }
 }
 
-export async function filterT(req, res) {
+export async function getT(req, res) {
     // this handler will filter task using the filterTask function in the task models
     // auth layer
     try {

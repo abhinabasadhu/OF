@@ -43,13 +43,6 @@ export async function insertTask(item) {
     }
 }
 
-export async function listAll() {
-    // this function lists all the tasks
-
-    const tasks = await collection.find({}).toArray(); // converting the cursor into a list of documents
-    console.log(`All Tasks : ${tasks}`)
-    return tasks;
-}
 
 export async function updateTask(query, item) {
     // this function updates an existing task
