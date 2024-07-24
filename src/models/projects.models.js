@@ -1,7 +1,7 @@
 import connectToDB from "../util/db.js"
 import Joi from 'joi';
 import { ObjectId } from 'mongodb';
-import { parseDateIso } from "../util/util.js";
+import { parseDate } from "../util/util.js";
 
 const db = await connectToDB();
 const collection = db.collection('projects');
@@ -23,9 +23,9 @@ export async function insertProject(item) {
 
     // validation layer
     // parse the string dates into iso
-    item.startDate = parseDateIso(item.startDate);
-    item.dueDate = parseDateIso(item.dueDate);
-    item.doneDate = parseDateIso(item.doneDate);
+    item.startDate = parseDate(item.startDate).toISOString();
+    item.dueDate = parseDate(item.dueDate).toISOString();
+    item.doneDate = parseDate(item.doneDate).toISOString();
 
     const { error, value } = projectS.validate(item, {
         abortEarly: true,
