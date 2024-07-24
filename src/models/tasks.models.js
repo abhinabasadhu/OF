@@ -5,6 +5,7 @@ import { parseDate } from "../util/util.js";
 
 const db = await connectToDB();
 const collection = db.collection('tasks');
+const projectCollection = db.collection('projects');
 
 // task schema 
 const taskS = Joi.object({
@@ -70,6 +71,10 @@ export async function deleteTask(query) {
     const task = await collection.findOne({ '_id': taskObjectId })
     if (!task) {
         throw new Error('Task does not exits!');
+    }
+    if (task.projectId) {
+        // if the task is assigned to a project unasign it to remove it 
+        throw new Error('This task is added to a project, unasign the task first!');
     }
     const deleteResult = await collection.deleteOne({ '_id': taskObjectId });
     console.log('Deleted task count:', deleteResult.deletedCount);

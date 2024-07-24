@@ -68,6 +68,10 @@ export async function deleteProject(query) {
     if (!project) {
         throw new Error('project does not exits!');
     }
+    if (project.tasks.length > 0) {
+        // if there is tasks in the project make sure it has no todos to be deleted
+        throw new Error('This project has task asigned to it');
+    }
     const deleteResult = await collection.deleteOne({ '_id': projectObjectId });
     console.log('Deleted project count:', deleteResult.deletedCount);
     return deleteResult;
@@ -108,7 +112,7 @@ export async function asignTaskToProject(projectId, taskId) {
         }
     }
     // push task object to tasks array in project
-    const update = await collection.updateOne({ '_id': projectObjectId }, { '$push': { 'tasks': task } })
+    const update = await collection.updateOne({ '_id': projectObjectId }, { '$push': { 'tasks': taskObjectId } })
     // update the projectId in tasks document
     const updateTask = await taskCollection.updateOne({ '_id': taskObjectId }, { $set: { projectId: projectObjectId } })
     if (update.modifiedCount === 1 && updateTask.modifiedCount === 1) {

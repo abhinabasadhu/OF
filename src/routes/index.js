@@ -5,7 +5,7 @@ import projectHandler from "./projects.routes.js";
 import baseHandler from "./base.routes.js";
 
 const router = Router();
-
+// connecting all the routes
 router.use("/", baseHandler);
 router.use("/task", taskHandler);
 router.use("/project", projectHandler);
