@@ -49,12 +49,12 @@ export async function updateProject(query, item) {
     // this function updates an existing projects
     // check if the pask exists in the db
 
-    const projectObjectid = new ObjectId(query.id);
-    const project = await collection.findOne({ '_id': projectObjectid })
+    const projectObjectId = new ObjectId(query.id);
+    const project = await collection.findOne({ '_id': projectObjectId })
     if (!project) {
         throw new Error('project does not exits!');
     }
-    const updateResult = await collection.updateOne({ '_id': projectObjectid }, { $set: item });
+    const updateResult = await collection.updateOne({ '_id': projectObjectId }, { $set: item });
     console.log('Updated project count:', updateResult.modifiedCount);
     return updateResult;
 }
@@ -63,12 +63,12 @@ export async function deleteProject(query) {
     // this function will delete a single project
     // check if the project exists in the db
 
-    const projectObjectid = new ObjectId(query.id);
-    const project = await collection.findOne({ '_id': projectObjectid })
+    const projectObjectId = new ObjectId(query.id);
+    const project = await collection.findOne({ '_id': projectObjectId })
     if (!project) {
         throw new Error('project does not exits!');
     }
-    const deleteResult = await collection.deleteOne({ '_id': projectObjectid });
+    const deleteResult = await collection.deleteOne({ '_id': projectObjectId });
     console.log('Deleted project count:', deleteResult.deletedCount);
     return deleteResult;
 }
@@ -84,14 +84,14 @@ export async function asignTaskToProject(projectId, taskId) {
     // this function will add tasks to projects
 
     // check if task exists
-    const taskObjectid = new ObjectId(taskId)
-    const task = await taskCollection.findOne({ '_id': taskObjectid })
+    const taskObjectId = new ObjectId(taskId)
+    const task = await taskCollection.findOne({ '_id': taskObjectId })
     if (!task) {
         throw new Error('task does not exits!');
     }
     // check if project exists
-    const projectObjectid = new ObjectId(projectId)
-    const project = await collection.findOne({ '_id': projectObjectid })
+    const projectObjectId = new ObjectId(projectId)
+    const project = await collection.findOne({ '_id': projectObjectId })
     if (!project) {
         throw new Error('project does not exits!');
     }
@@ -102,16 +102,16 @@ export async function asignTaskToProject(projectId, taskId) {
             return true;
         }
         // take the project from the array it already exists no need to update the projectid here as it will be done down the line anyway
-        const updateproject = await collection.updateOne({ '_id': task.projectId }, { '$pull': { 'tasks': { '_id': taskObjectid } } })
-        if (updateproject.modifiedCount !== 1) {
+        const updateProject = await collection.updateOne({ '_id': task.projectId }, { '$pull': { 'tasks': { '_id': taskObjectId } } })
+        if (updateProject.modifiedCount !== 1) {
             return false
         }
     }
     // push task object to tasks array in project
-    const update = await collection.updateOne({ '_id': projectObjectid }, { '$push': { 'tasks': task } })
+    const update = await collection.updateOne({ '_id': projectObjectId }, { '$push': { 'tasks': task } })
     // update the projectId in tasks document
-    const updatetask = await taskCollection.updateOne({ '_id': taskObjectid }, { $set: { projectId: projectObjectid } })
-    if (update.modifiedCount === 1 && updatetask.modifiedCount === 1) {
+    const updateTask = await taskCollection.updateOne({ '_id': taskObjectId }, { $set: { projectId: projectObjectId } })
+    if (update.modifiedCount === 1 && updateTask.modifiedCount === 1) {
         return true;
     };
 }

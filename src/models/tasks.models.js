@@ -47,12 +47,12 @@ export async function insertTask(item) {
 export async function updateTask(query, item) {
     // this function updates an existing task
     // check if the task exists in the db
-    const taskObjectid = new ObjectId(query.id);
-    const task = await collection.findOne({ '_id': taskObjectid })
+    const taskObjectId = new ObjectId(query.id);
+    const task = await collection.findOne({ '_id': taskObjectId })
     if (!task) {
         throw new Error('Task does not exits!');
     }
-    const updateResult = await collection.updateOne({ '_id': taskObjectid }, { $set: item });
+    const updateResult = await collection.updateOne({ '_id': taskObjectId }, { $set: item });
     console.log('Updated task count:', updateResult.modifiedCount);
     return updateResult;
 }
@@ -61,12 +61,12 @@ export async function deleteTask(query) {
     // this function will delete a single task
     // check if the task exists in the db
 
-    const taskObjectid = new ObjectId(query.id);
-    const task = await collection.findOne({ '_id': taskObjectid })
+    const taskObjectId = new ObjectId(query.id);
+    const task = await collection.findOne({ '_id': taskObjectId })
     if (!task) {
         throw new Error('Task does not exits!');
     }
-    const deleteResult = await collection.deleteOne({ '_id': taskObjectid });
+    const deleteResult = await collection.deleteOne({ '_id': taskObjectId });
     console.log('Deleted task count:', deleteResult.deletedCount);
     return deleteResult;
 }
