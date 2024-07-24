@@ -1,6 +1,7 @@
 import connectToDB from "../util/db.js"
 import Joi from 'joi';
 import { ObjectId } from 'mongodb';
+import { parseDateIso } from "../util/util.js";
 
 const db = await connectToDB();
 const collection = db.collection('tasks');
@@ -21,10 +22,15 @@ export async function insertTask(item){
     // params: task object
 
     // validation layer
+    // parse the string dates into iso
+    item.startDate = parseDateIso(item.startDate);
+    item.dueDate = parseDateIso(item.dueDate);
+    item.doneDate = parseDateIso(item.doneDate);
     const { error, value } = taskS.validate(item);
+
     if (value) {
         // db operation
-        const insertResult = await collection.insertOne(item);
+        const insertResult = await collection.insertOne(value);
         console.log('Inserted item:', insertResult.insertedId);
         // return result
         return insertResult;
@@ -54,20 +60,25 @@ export async function updateTask(query, item) {
     return updateResult;
 }
 
-export async function deleteTask(id) {
+export async function deleteTask(query) {
     // this function will delete a single task
     // check if the task exists in the db
 
-    const task = await collection.findOne({'id': id})
+    const taskObjectid = new ObjectId(query.id);
+    const task = await collection.findOne({'_id': taskObjectid})
     if (!task) {
         throw new Error('Task does not exits!');
     }
-    const deleteResult = await collection.deleteOne({'id': id});
+    const deleteResult = await collection.deleteOne({'_id': taskObjectid});
     console.log('Deleted task count:', deleteResult.deletedCount);
     return deleteResult;
 }
 
-export async function filterTask() {}
+export async function filterTask(query) {
+    // this function will fliter tasks according to params
+    const tasks = await collection.find(query).toArray();
+    return tasks;
+}
 
 
 
