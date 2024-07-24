@@ -49,7 +49,7 @@ const projectsDueToday = async() => {
              $gte: startOfDay, // Start of the day
              $lte: endOfDay    // End of the day
          }
-     };
+        };
 
     // Query the database
     const projects = await projectCollection.find(query).toArray();
